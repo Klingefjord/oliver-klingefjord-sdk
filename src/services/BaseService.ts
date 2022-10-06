@@ -64,41 +64,59 @@ export default abstract class BaseService<T> {
 
     // Match filter
     if (filtering.matches) {
-      const matches = filtering.matches.matches ?? true;
+      let key = filtering.matches.field;
 
-      queries[`${filtering.matches.field}${matches ? "" : "!"}`] =
-        filtering.matches.value;
+      if (filtering.matches.matches != null && !filtering.matches.matches) {
+        key = `!${key}`;
+      }
+
+      queries[key] = filtering.matches.value;
     }
 
     // Includes filter
     if (filtering.includes) {
-      const include = filtering.includes.include ?? true;
+      let key = filtering.includes.field;
 
-      queries[`${filtering.includes.field}${include ? "" : "!"}`] =
-        filtering.includes.values.join(",");
+      if (filtering.includes.include != null && !filtering.includes.include) {
+        key = `!${key}`;
+      }
+
+      queries[key] = filtering.includes.values.join(",");
     }
 
     // Regex filter
     if (filtering.regex) {
-      const matches = filtering.regex.matches ?? true;
+      let key = filtering.regex.field;
 
-      queries[`${filtering.regex.field}${matches ? "" : "!"}`] =
-        filtering.regex.regex;
+      if (filtering.regex.matches != null && !filtering.regex.matches) {
+        key = `!${key}`;
+      }
+
+      queries[key] = filtering.regex.regex;
     }
 
     //
     // Range filters
     //
-    if (filtering.range?.equalTo) {
-      queries[`${filtering.range.field}`] = filtering.range.equalTo;
-    }
+    // The axios api handles query parameters as a string : any dict.
+    // For ranges > and < that doesn't have a corresponding value, pass an empty string.
+    //
+    if (filtering.range) {
+      const field = filtering.range.field;
 
-    if (filtering.range?.lessThan) {
-      queries[`${filtering.range.field}<${filtering.range.lessThan}`] = "";
-    }
+      if (filtering.range?.equalTo) {
+        queries[field] = filtering.range.equalTo;
+      } else if (filtering.range?.lessThan) {
+        const key = `${field}<${filtering.range.lessThan}`;
 
-    if (filtering.range?.greaterThan) {
-      queries[`${filtering.range.field}>${filtering.range.greaterThan}`] = "";
+        queries[key] = "";
+      } else if (filtering.range?.greaterThan) {
+        const key = `${field}>${filtering.range.greaterThan}`;
+
+        queries[key] = "";
+      } else {
+        throw Error("Invalid range filter.");
+      }
     }
 
     return queries;

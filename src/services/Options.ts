@@ -48,30 +48,43 @@ export interface FilteringOptions {
   range?: RangeFilter;
 }
 
-interface Filter {
+/**
+ * Passing "false" to "matches" negates the filter.
+ */
+interface MatchFilter {
   field: string;
-}
-
-interface MatchFilter extends Filter {
-  matches?: boolean;
   value: string;
-}
-
-interface IncludeFilter extends Filter {
-  include?: boolean;
-  values: string[];
-}
-
-interface ExistsFilter extends Filter {
-  exists: boolean;
-}
-
-interface RegexFilter extends Filter {
   matches?: boolean;
-  regex: string;
 }
 
-interface RangeFilter extends Filter {
+/**
+ * Passing "false" to "include" negates the filter.
+ */
+interface IncludeFilter {
+  field: string;
+  values: string[];
+  include?: boolean;
+}
+
+/**
+ * Passing "false" to "exists" negates the filter.
+ */
+interface ExistsFilter {
+  field: string;
+  exists?: boolean;
+}
+
+/**
+ * Passing "false" to "matches" negates the filter.
+ */
+interface RegexFilter {
+  field: string;
+  regex: string;
+  matches?: boolean;
+}
+
+interface RangeFilter {
+  field: string;
   equalTo?: number;
   lessThan?: number;
   greaterThan?: number;
