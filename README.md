@@ -79,3 +79,5 @@ const movies = await client.movies.getAll(options);
 # If I had more time
 
 - Finish up tests for all services and options.
+- Validate the `options` input.
+- Better error messages.
